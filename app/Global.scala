@@ -37,9 +37,9 @@ object Global extends GlobalSettings {
         Coffee(Some("French_Roast_Decaf"), 49, 999, 0, 0))
 
       Account.insertAll(
-        Account(1, "alice@example.com", "secret", "Alice", Administrator),
-        Account(2, "bob@example.com", "secret", "Bob", NormalUser),
-        Account(3, "chris@example.com", "secret", "Chris", NormalUser))
+        Account(Some(1), "alice@example.com", "secret", "Alice", Administrator),
+        Account(Some(2), "bob@example.com", "secret", "Bob", NormalUser),
+        Account(Some(3), "chris@example.com", "secret", "Chris", NormalUser))
     }
   }
 }
