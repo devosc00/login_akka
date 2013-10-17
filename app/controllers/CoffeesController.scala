@@ -18,7 +18,7 @@ import scala.slick.driver.H2Driver.simple._
 // Use the implicit threadLocalSession
 import Database.threadLocalSession
 
-object CoffeesController extends Controller with AuthElement with AuthConfigImpl {
+object UsersController extends Controller with AuthElement with AuthConfigImpl {
 
   lazy val database = Database.forDataSource(DB.getDataSource())
 
@@ -30,22 +30,23 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
   val Home = Redirect(routes.CoffeesController.list(0, 2, ""))
 
   val supplierSelect = database withSession {
-    Suppliers.options.list.map(item => (item._1.toString, item._2))
+    Companies.options.list.map(item => (item._1.toString, item._2))
   }
 
   /**
-   * Describe the form (used in both edit and create screens).
+   * Describe the Userused in both edit and create screens).
    */
   val form = Form(
     mapping(
       //"id" -> optional(number),
       "name" -> optional(nonEmptyText),
-      "supID" -> number,
-      "price" -> longNumber,
-      "sales" -> number,
-      "total" -> number)(Coffee.apply)(Coffee.unapply))
+      "accID" -> number,
+      "possition" -> text,
+      "doneParts" -> number,
+      "setup" -> number)(User.apply)(User
+ .unapply))
 
-  // -- Actions
+  // -- Users
 
   /**
    * Handle default path requests, redirect to entities list
@@ -62,10 +63,10 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
   def list(page: Int, orderBy: Int, filter: String = "%") = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     database withSession {
       Ok(html.coffees.list(
-        Page(Coffees.list(page, pageSize, orderBy, filter).list,
+        Page(Users.list(page, pageSize, orderBy, filter).list,
           page,
           offset = pageSize * page,
-          Coffees.findAll(filter).list.size),
+          Users.findAll(filter).list.size),
         orderBy,
         filter))
     }
@@ -75,7 +76,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
    */
   def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      Ok(html.coffees.createForm(form, supplierSelect))
+      Ok(html.Users.createForm(form, supplierSelect))
     }
   }
 
@@ -87,7 +88,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
       formWithErrors => BadRequest(html.coffees.createForm(formWithErrors, supplierSelect)),
       entity => {
         database withTransaction {
-          Coffees.insert(entity)
+          Users.insert(entity)
           Home.flashing("success" -> s"Entity ${entity.name} has been created")
         }
       })
@@ -100,7 +101,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
    */
   def edit(pk: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      Coffees.findByPK(pk).list.headOption match {
+      Users.findByPK(pk).list.headOption match {
         case Some(e) => Ok(html.coffees.editForm(pk, form.fill(e), supplierSelect))
         case None => NotFound
       }
@@ -117,7 +118,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
       form.bindFromRequest.fold(
         formWithErrors => BadRequest(html.coffees.editForm(pk, formWithErrors, supplierSelect)),
         entity => {
-          Home.flashing(Coffees.findByPK(pk).update(entity) match {
+          Home.flashing(Users.findByPK(pk).update(entity) match {
             case 0 => "failure" -> s"Could not update entity ${entity.name}"
             case _ => "success" -> s"Entity ${entity.name} has been updated"
           })
@@ -130,7 +131,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
    */
   def delete(pk: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      Home.flashing(Coffees.findByPK(pk).delete match {
+      Home.flashing(Users.findByPK(pk).delete match {
         case 0 => "failure" -> "Entity has Not been deleted"
         case x => "success" -> s"Entity has been deleted (deleted $x row(s))"
       })

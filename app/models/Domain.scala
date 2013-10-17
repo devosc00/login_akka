@@ -7,22 +7,22 @@ import scala.reflect.runtime.universe._
 //import Database.threadLocalSession
 //import scala.slick.ast.Join
 
-case class Supplier(
-  supId: Option[Int],
+case class Company(
+  compId: Option[Int],
   name: String,
   street: String,
   city: String,
   state: String,
   zipCode: String)
 
-case class Coffee(
+case class User(
   //id: Option[Int],
   //name: String,
   name: Option[String],
-  supID: Int,
-  price: Long,
-  sales: Int,
-  total: Int)
+  accID: Int,
+  position: String,
+  doneParts: Int,
+  setup: Int)
 
 /**
  * Helper for pagination.
@@ -33,53 +33,53 @@ case class Page[A](items: Seq[A], page: Int = 0, offset: Long, total: Long) {
 }
 
 // Definition of the SUPPLIERS table
-object Suppliers extends Table[Supplier]("SUPPLIERS") {
-  def supId = column[Int]("SUP_ID", O.PrimaryKey) // This is the primary key column
-  def name = column[String]("SUP_NAME")
+object Companies extends Table[Company]("COMPANIES") {
+  def compId = column[Int]("COMP_ID", O.PrimaryKey) // This is the primary key column
+  def name = column[String]("COMP_NAME")
   def street = column[String]("STREET")
   def city = column[String]("CITY")
   def state = column[String]("STATE")
   def zipCode = column[String]("ZIP")
   // Every table needs a * projection with the same type as the table's type parameter
-  def * = supId.? ~ name ~ street ~ city ~ state ~ zipCode <> (Supplier.apply _, Supplier.unapply _)
+  def * = compId.? ~ name ~ street ~ city ~ state ~ zipCode <> (Company.apply _, Company.unapply _)
 
-  def findAll() = for (s <- Suppliers) yield s
+  def findAll() = for (s <- Companies) yield s
 
   /**
    * Construct the Map[String,String] needed to fill a select options set.
    */
-  def options = this.findAll.map(x => x.supId -> x.name)
+  def options = this.findAll.map(x => x.compId -> x.name)
 }
 
 // Definition of the COFFEES table
-object Coffees extends Table[Coffee]("COFFEES") {
-  //def id = column[Int]("COF_ID", O.PrimaryKey, O AutoInc) // This is the primary key column
-  def name = column[String]("COF_NAME", O.PrimaryKey) // This is the primary key column
-  def supID = column[Int]("SUP_ID")
-  def price = column[Long]("PRICE")
-  def sales = column[Int]("SALES")
-  def total = column[Int]("TOTAL")
+object Users extends Table[User]("USERS") {
+  //def id = column[Int]("USER_ID", O.PrimaryKey, O AutoInc) // This is the primary key column
+  def name = column[String]("USER_NAME", O.PrimaryKey) // This is the primary key column
+  def accID = column[Int]("ACC_ID")
+  def possition = column[String]("POSSITION")
+  def doneParts = column[Int]("DONE_PARTS")
+  def setup = column[Int]("SETUP")
   //def * = id.? ~ name ~ supID ~ price ~ sales ~ total <> (Coffee.apply _, Coffee.unapply _)
-  def * = name.? ~ supID ~ price ~ sales ~ total <> (Coffee.apply _, Coffee.unapply _)
+  def * = name.? ~ accID ~ possition ~ doneParts ~ setup <> (User.apply _, User.unapply _)
   //def autoInc = id.? ~ name ~ supID ~ price ~ sales ~ total <> (Coffee, Coffee.unapply _) returning id
   // A reified foreign key relation that can be navigated to create a join
-  def supplier = foreignKey("SUP_FK", supID, Suppliers)(_.supId)
+  def account = foreignKey("ACC_FK", accID, Account)(_.accId)
 
   def findAll(filter: String = "%") = {
     for {
-      c <- Coffees
-      s <- c.supplier
-      if (c.name like ("%" + filter))
-    } yield (c, s)
+      s <- Users
+      a <- s.account
+      if (s.name like ("%" + filter))
+    } yield (s, a)
   }
 
   def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%") = {
-    val members = typeOf[Coffee].members.filter(m => m.isTerm && !m.isMethod).toList
+    val members = typeOf[User].members.filter(m => m.isTerm && !m.isMethod).toList
     val fields = members.map(_.name).reverse.zipWithIndex
-    println("Fields of Coffee: " + fields) // List((id ,0), (name ,1), (supID ,2), (price ,3), (sales ,4), (total ,5))
+    println("Fields of users: " + fields) // List((id ,0), (name ,1), (supID ,2), (price ,3), (sales ,4), (total ,5))
     findAll(filter).sortBy(_._1.name).drop(page * pageSize).take(pageSize)
   }
 
   def findByPK(pk: String) =
-    for (c <- Coffees if c.name === pk) yield c
+    for (u <- Users if u.name === pk) yield u
 }

@@ -17,24 +17,24 @@ object Global extends GlobalSettings {
 
     database withSession {
       // Create the tables, including primary and foreign keys
-      val ddl = (Suppliers.ddl ++ Coffees.ddl ++ Account.ddl)
+      val ddl = (Companies.ddl ++ Users.ddl ++ Account.ddl)
 
       //ddl.drop
       ddl.create
 
-      // Insert some suppliers
-      Suppliers.insertAll(
-        Supplier(Some(101), "Acme, Inc.", "99 Market Street", "Groundsville", "CA", "95199"),
-        Supplier(Some(49), "Superior Coffee", "1 Party Place", "Mendocino", "CA", "95460"),
-        Supplier(Some(150), "The High Ground", "100 Coffee Lane", "Meadows", "CA", "93966"))
+      // Insert some Companies
+      Companies.insertAll(
+        Company(Some(101), "Acme, Inc.", "99 Market Street", "Groundsville", "CA", "95199"),
+        Company(Some(49), "Superior Coffee", "1 Party Place", "Mendocino", "CA", "95460"),
+        Company(Some(150), "The High Ground", "100 Coffee Lane", "Meadows", "CA", "93966"))
 
       // Insert some coffees (using JDBC's batch insert feature, if supported by the DB)
-      Coffees.insertAll(
-        Coffee(Some("Colombian"), 101, 799, 0, 0),
-        Coffee(Some("French_Roast"), 49, 899, 0, 0),
-        Coffee(Some("Espresso"), 150, 999, 0, 0),
-        Coffee(Some("Colombian_Decaf"), 101, 899, 0, 0),
-        Coffee(Some("French_Roast_Decaf"), 49, 999, 0, 0))
+      Users.insertAll(
+        User(Some("Colombian"), 101, "pilarz", 0, 0),
+        User(Some("French_Roast"), 49, "tokarz", 0, 0),
+        User(Some("Espresso"), 150, "frezer", 0, 0),
+        User(Some("Colombian_Decaf"), 101, "tokarz", 0, 0),
+        User(Some("French_Roast_Decaf"), 49, "frezer", 0, 0))
 
       Account.insertAll(
         Account(Some(1), "alice@example.com", "secret", "Alice", Administrator),

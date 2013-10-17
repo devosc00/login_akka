@@ -4,18 +4,18 @@ import scala.slick.driver.H2Driver.simple._
 import play.api.db.DB
 import play.api.Play.current
 
-case class Account(id: Option [Int], email: String, password: String, name: String, permission: Permission)
+case class Account(accId: Option [Int], email: String, password: String, name: String, permission: Permission)
 
 object Account extends Table[Account]("ACCOUNT") {
   lazy val database = Database.forDataSource(DB.getDataSource())
 
-  def id = column[Int]("ACC_ID", O.PrimaryKey)
+  def accId = column[Int]("ACC_ID", O.PrimaryKey)
   def email = column[String]("EMAIL")
   def password = column[String]("PASSWORD")
   def name = column[String]("NAME")
   def permission = column[Permission]("PERMISSION")
   // Every table needs a * projection with the same type as the table's type parameter
-  def * = id.? ~ email ~ password ~ name ~ permission <> (Account.apply _, Account.unapply _)
+  def * = accId.? ~ email ~ password ~ name ~ permission <> (Account.apply _, Account.unapply _)
 
   def authenticate(email: String, password: String): Option[Account] = {
     findByEmail(email).filter { account => password.equals(account.password) }
@@ -28,9 +28,9 @@ object Account extends Table[Account]("ACCOUNT") {
     }
   }
 
-  def findById(id: Int): Option[Account] = {
+  def findById(accId: Int): Option[Account] = {
     database withSession { implicit session =>
-      val q1 = for (u <- Account if u.id === id) yield u
+      val q1 = for (u <- Account if u.accId === accId) yield u
       q1.list.headOption.asInstanceOf[Option[Account]]
     }
   }

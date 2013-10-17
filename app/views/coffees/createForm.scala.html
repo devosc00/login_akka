@@ -1,4 +1,4 @@
-@(coffeeForm: Form[Coffee], suppliers: Seq[(String, String)])
+@(coffeeForm: Form[User], suppliers: Seq[(String, String)])
 
 @import helper._
 
@@ -6,13 +6,13 @@
 
 @main {
     
-    <h1>Add a coffee</h1>
+    <h1>Add a User</h1>
     
     @form(routes.CoffeesController.save()) {
         
         <fieldset>
         
-            @inputText(coffeeForm("name"), '_label -> "Coffee name")
+            @inputText(coffeeForm("name"), '_label -> "User name")
             @inputText(coffeeForm("price"), '_label -> "Price")
             @inputText(coffeeForm("sales"), '_label -> "Sales")
             @inputText(coffeeForm("total"), '_label -> "Total")
