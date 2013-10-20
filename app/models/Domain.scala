@@ -20,6 +20,7 @@ case class User(
   //name: String,
   name: Option[String],
   accID: Int,
+  compID: Int,
   position: String,
   doneParts: Int,
   setup: Int)
@@ -56,21 +57,24 @@ object Users extends Table[User]("USERS") {
   //def id = column[Int]("USER_ID", O.PrimaryKey, O AutoInc) // This is the primary key column
   def name = column[String]("USER_NAME", O.PrimaryKey) // This is the primary key column
   def accID = column[Int]("ACC_ID")
-  def possition = column[String]("POSSITION")
+  def compID = column[Int]("COMP_ID")
+  def position = column[String]("POSSITION")
   def doneParts = column[Int]("DONE_PARTS")
   def setup = column[Int]("SETUP")
   //def * = id.? ~ name ~ supID ~ price ~ sales ~ total <> (Coffee.apply _, Coffee.unapply _)
-  def * = name.? ~ accID ~ possition ~ doneParts ~ setup <> (User.apply _, User.unapply _)
+  def * = name.? ~ accID ~ compID ~ position ~ doneParts ~ setup <> (User.apply _, User.unapply _)
   //def autoInc = id.? ~ name ~ supID ~ price ~ sales ~ total <> (Coffee, Coffee.unapply _) returning id
   // A reified foreign key relation that can be navigated to create a join
   def account = foreignKey("ACC_FK", accID, Account)(_.accId)
 
+  def company = foreignKey("COMP_FK", compID, Companies)(_.compId)
+
   def findAll(filter: String = "%") = {
     for {
       s <- Users
-      a <- s.account
+      c <- s.company
       if (s.name like ("%" + filter))
-    } yield (s, a)
+    } yield (s, c)
   }
 
   def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%") = {

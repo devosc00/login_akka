@@ -1,4 +1,4 @@
-@(pk: String, coffeeForm: Form[User], suppliers : Seq[(String, String)])
+@(pk: String, coffeeForm: Form[User])
 
 @import helper._
 
@@ -17,12 +17,7 @@
             @inputText(coffeeForm("sales"), '_label -> "Sales")
             @inputText(coffeeForm("total"), '_label -> "Total")
 
-            @select(
-                coffeeForm("supID"), 
-                suppliers, 
-                '_label -> "Supplier", '_default -> "-- Choose a supplier --",
-                '_showConstraints -> false
-            )
+          
             
         </fieldset>
         

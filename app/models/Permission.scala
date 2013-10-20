@@ -22,4 +22,5 @@ object Permission {
     case NormalUser => "NormalUser" 
     case _ => throw new IllegalArgumentException()
   }
+
 }

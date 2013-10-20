@@ -34,7 +34,7 @@ object Application extends Controller with LoginLogout with AuthConfigImpl {
     println("start act")
     loginForm.bindFromRequest.fold(
       formWithErrors => { println("form eror"); BadRequest(html.login(formWithErrors)) },
-      user => gotoLoginSucceeded(user.get.id.getOrElse(0)))
+      user => gotoLoginSucceeded(user.get.accId.getOrElse(0)))
   }
 }
 

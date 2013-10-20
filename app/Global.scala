@@ -22,6 +22,11 @@ object Global extends GlobalSettings {
       //ddl.drop
       ddl.create
 
+      Account.insertAll(
+        Account(Some(1), "alice@example.com", "secret", Administrator),
+        Account(Some(2), "bob@example.com", "secret", NormalUser),
+        Account(Some(3), "chris@example.com", "secret", NormalUser))
+
       // Insert some Companies
       Companies.insertAll(
         Company(Some(101), "Acme, Inc.", "99 Market Street", "Groundsville", "CA", "95199"),
@@ -30,16 +35,9 @@ object Global extends GlobalSettings {
 
       // Insert some coffees (using JDBC's batch insert feature, if supported by the DB)
       Users.insertAll(
-        User(Some("Colombian"), 101, "pilarz", 0, 0),
-        User(Some("French_Roast"), 49, "tokarz", 0, 0),
-        User(Some("Espresso"), 150, "frezer", 0, 0),
-        User(Some("Colombian_Decaf"), 101, "tokarz", 0, 0),
-        User(Some("French_Roast_Decaf"), 49, "frezer", 0, 0))
-
-      Account.insertAll(
-        Account(Some(1), "alice@example.com", "secret", "Alice", Administrator),
-        Account(Some(2), "bob@example.com", "secret", "Bob", NormalUser),
-        Account(Some(3), "chris@example.com", "secret", "Chris", NormalUser))
+        User(Some("Robert Adamski"), 1, 101, "pilarz", 0, 0),
+        User(Some("Marcin Król"), 2, 49, "tokarz", 0, 0),
+        User(Some("Przemek Sobota"), 3, 49, "frezer", 0, 0)) 
     }
   }
 }
