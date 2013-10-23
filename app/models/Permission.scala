@@ -11,6 +11,9 @@ object Permission {
     d => Permission.stringValueOf(d),
     t => Permission.valueOf(t))
 
+ /* implicit def permissionMapper = MappedTypeMapper.base[Permission, String](
+    )*/
+
   def valueOf(value: String): Permission = value match {
     case "Administrator" => Administrator
     case "NormalUser" => NormalUser

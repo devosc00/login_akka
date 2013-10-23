@@ -44,18 +44,18 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
       "compID" -> number,
       "position" -> text,
       "doneParts" -> number,
-      "setup" -> number)
-    (User.apply)(User.unapply)
+      "setup" -> number
+    )(User.apply)(User.unapply)
       )
 
   val accForm = Form(
-    tuple(
-    "accId" -> optional(number),
-    "email" -> text,
-    "password" -> text
-    )
-  )
-
+    mapping(
+      "accId" -> optional(number),
+      "email" -> text,
+      "password" -> text
+    )((accId, email, password) => Account(accId, email, password, NormalUser))
+    ((account: Account) => Some(account.accId, account.email, account.password))
+      )
   // -- Users
 
   /**
@@ -95,7 +95,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
    */
   def save = StackAction(AuthorityKey -> Administrator) { implicit request =>
     userForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.coffees.createForm(formWithErrors)),
+      formWithErrors => BadRequest(html.coffees.createForm(formWithErrors, accForm)),
       entity => {
         database withTransaction {
           Users.insert(entity)

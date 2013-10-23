@@ -61,6 +61,7 @@ object Users extends Table[User]("USERS") {
   def position = column[String]("POSSITION")
   def doneParts = column[Int]("DONE_PARTS")
   def setup = column[Int]("SETUP")
+  //def account = column[Account]("ACCOUNT")
   //def * = id.? ~ name ~ supID ~ price ~ sales ~ total <> (Coffee.apply _, Coffee.unapply _)
   def * = name.? ~ accID ~ compID ~ position ~ doneParts ~ setup <> (User.apply _, User.unapply _)
   //def autoInc = id.? ~ name ~ supID ~ price ~ sales ~ total <> (Coffee, Coffee.unapply _) returning id
@@ -86,4 +87,8 @@ object Users extends Table[User]("USERS") {
 
   def findByPK(pk: String) =
     for (u <- Users if u.name === pk) yield u
+
+ /* def findAccId(pk: String) = 
+    val user = { user => findByPK(pk).get.accID }
+    */
 }
