@@ -1,2 +1,2 @@
 #message
-coffees.list.title={0,choice,0#No coffees|1#One coffee|1<{0,number,integer} coffees} found
+users.list.title={0,choice,0#No users|1#One user|1<{0,number,integer} users} found

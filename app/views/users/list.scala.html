@@ -4,7 +4,7 @@
 * Helper generating navigation links    *
 ****************************************@
 @link(newPage: Int, newOrderBy: Option[Int] = None) = @{
-    routes.CoffeesController.list(
+    routes.UsersController.list(
     newPage, 
     newOrderBy.map { orderBy =>
         if(orderBy == scala.math.abs(currentOrderBy)) -currentOrderBy else orderBy
@@ -24,7 +24,7 @@
 
 @main {
     
-    <h1>@Messages("coffees.list.title", currentPage.total)</h1>
+    <h1>@Messages("users.list.title", currentPage.total)</h1>
 
     @flash.get("success").map { message =>
         <div class="alert-message warning">
@@ -34,12 +34,12 @@
 
     <div id="actions">
         
-        @helper.form(action=routes.CoffeesController.list()) {
+        @helper.form(action=routes.UsersController.list()) {
             <input type="search" id="searchbox" name="f" value="@currentFilter" placeholder="Filter by name...">
             <input type="submit" id="searchsubmit" value="Filtruj" class="btn primary">
         }
         
-        <a class="btn success" id="add" href="@routes.CoffeesController.create()">Dodaj pracownika</a>
+        <a class="btn success" id="add" href="@routes.UsersController.create()">Dodaj pracownika</a>
         
     </div>
     
@@ -50,16 +50,15 @@
                 <tr>
                     @header(2, "Imię i nazwisko")
                     @header(3, "Stanowisko")
-                    @header(4, "Projekt")
-                    @header(5, "Liczba sztuk")
-                    @header(6, "Sztuki na ustawienie")
+                    @header(4, "Liczba sztuk")
+                    @header(5, "Sztuki na ustawienie")
                 </tr>
             </thead>
             <tbody>
                 @entities.map { 
                  case (entity,company) => {
                         <tr>
-                            <td><a href="@routes.CoffeesController.edit(entity.name.get)">@entity.name</a></td>
+                            <td><a href="@routes.UsersController.edit(entity.name.get)">@entity.name</a></td>
                             <td>
                                 @entity.position
                             </td>

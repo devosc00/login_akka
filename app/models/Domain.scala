@@ -35,7 +35,7 @@ case class Page[A](items: Seq[A], page: Int = 0, offset: Long, total: Long) {
 
 // Definition of the SUPPLIERS table
 object Companies extends Table[Company]("COMPANIES") {
-  def compId = column[Int]("COMP_ID", O.PrimaryKey) // This is the primary key column
+  def compId = column[Int]("COMP_ID", O.PrimaryKey, O.AutoInc) // This is the primary key column
   def name = column[String]("COMP_NAME")
   def street = column[String]("STREET")
   def city = column[String]("CITY")
@@ -43,6 +43,7 @@ object Companies extends Table[Company]("COMPANIES") {
   def zipCode = column[String]("ZIP")
   // Every table needs a * projection with the same type as the table's type parameter
   def * = compId.? ~ name ~ street ~ city ~ state ~ zipCode <> (Company.apply _, Company.unapply _)
+  def autoInc = compId.? ~ name ~ street ~ city ~ state ~ zipCode <> (Company, Company.unapply _) returning compId
 
   def findAll() = for (s <- Companies) yield s
 
@@ -87,6 +88,11 @@ object Users extends Table[User]("USERS") {
 
   def findByPK(pk: String) =
     for (u <- Users if u.name === pk) yield u
+
+
+  def create(user: User) = database withTransaction {
+    Users.insert(user)
+  } 
 
  /* def findAccId(pk: String) = 
     val user = { user => findByPK(pk).get.accID }

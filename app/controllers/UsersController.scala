@@ -18,7 +18,7 @@ import scala.slick.driver.H2Driver.simple._
 // Use the implicit threadLocalSession
 import Database.threadLocalSession
 
-object CoffeesController extends Controller with AuthElement with AuthConfigImpl {
+object UsersController extends Controller with AuthElement with AuthConfigImpl {
 
   lazy val database = Database.forDataSource(DB.getDataSource())
 
@@ -27,7 +27,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
   /**
    * This result directly redirect to the application home.
    */
-  val Home = Redirect(routes.CoffeesController.list(0, 2, ""))
+  val Home = Redirect(routes.UsersController.list(0, 2, ""))
 
 /*  val supplierSelect = database withSession {
     Companies.options.list.map(item => (item._1.toString, item._2))
@@ -58,6 +58,16 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
       )
   // -- Users
 
+  val addUserForm = Form(
+    tuple(
+      "name" -> optional(nonEmptyText),
+      "email" -> text,
+      "password" -> text,
+      "position" -> text,
+      "division" -> text
+      )
+    )
+
   /**
    * Handle default path requests, redirect to entities list
    */
@@ -72,7 +82,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
    */
   def list(page: Int, orderBy: Int, filter: String = "%") = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     database withSession {
-      Ok(html.coffees.list(
+      Ok(html.users.list(
         Page(Users.list(page, pageSize, orderBy, filter).list,
           page,
           offset = pageSize * page,
@@ -86,16 +96,33 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
    */
   def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      Ok(html.coffees.createForm(userForm, accForm))
+      Ok(html.users.createForm(userForm, accForm))
     }
   }
 
   /**
    * Handle the 'new userForm' submission.
    */
+
+
+  def saveNewOne = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    addUserForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.users.createForm(addUserForm)),
+      {
+        case ( name, email, password, position, division) => {
+          val account = Account.create(Account(Some, email, password, division match {
+            case "Administrator" => Administartor
+            case "NormalUser" => NormalUser
+            } )),
+          val user = User.create(
+            User(name, ))
+        }
+      }
+      )
+
   def save = StackAction(AuthorityKey -> Administrator) { implicit request =>
     userForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.coffees.createForm(formWithErrors, accForm)),
+      formWithErrors => BadRequest(html.users.createForm(formWithErrors, accForm)),
       entity => {
         database withTransaction {
           Users.insert(entity)
@@ -112,7 +139,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
   def edit(pk: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
       Users.findByPK(pk).list.headOption match {
-        case Some(e) => Ok(html.coffees.editForm(pk, userForm.fill(e)))
+        case Some(e) => Ok(html.users.editForm(pk, userForm.fill(e)))
         case None => NotFound
       }
     }
@@ -126,7 +153,7 @@ object CoffeesController extends Controller with AuthElement with AuthConfigImpl
   def update(pk: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
       userForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(html.coffees.editForm(pk, formWithErrors)),
+        formWithErrors => BadRequest(html.users.editForm(pk, formWithErrors)),
         entity => {
           Home.flashing((Users.findByPK(pk).update(entity)) match {
             case 0 => "failure" -> s"Could not update entity ${entity.name}"

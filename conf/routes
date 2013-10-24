@@ -3,25 +3,25 @@
 # ~~~~
 
 # Home page
-GET      /                           controllers.CoffeesController.index
+GET      /                           controllers.UsersController.index
 
 # Authentication
 GET     /login                              controllers.Application.login
 POST    /login                              controllers.Application.authenticate
 GET     /logout                             controllers.Application.logout
 
-# Coffees list (look at the default values for pagination parameters)
-GET      /coffees                    controllers.CoffeesController.list(p:Int ?= 0, s:Int ?= 2, f ?= "%")
+# Users list (look at the default values for pagination parameters)
+GET      /users                    controllers.UsersController.list(p:Int ?= 0, s:Int ?= 2, f ?= "%")
 
 # Add coffee
-GET      /coffees/new                controllers.CoffeesController.create
-POST     /coffees                    controllers.CoffeesController.save
+GET      /users/new                controllers.UsersController.create
+POST     /users                    controllers.UsersController.save
 
 # Edit existing coffee
-GET     /coffees/:id                controllers.CoffeesController.edit(id:String)
-POST    /coffees/:id                controllers.CoffeesController.update(id:String)
+GET     /users/:id                controllers.UsersController.edit(id:String)
+POST    /users/:id                controllers.UsersController.update(id:String)
 
 # Delete a computer
-POST    /coffees/:id/delete         controllers.CoffeesController.delete(id:String)
+POST    /users/:id/delete         controllers.UsersController.delete(id:String)
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

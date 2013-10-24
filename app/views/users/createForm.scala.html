@@ -8,7 +8,7 @@
     
     <h1>Add a User</h1>
     
-    @helper.form(routes.CoffeesController.save()) {
+    @helper.form(routes.UsersController.save()) {
         
         <fieldset>
         
@@ -22,8 +22,8 @@
         </fieldset>
         
         <div class="actions">
-            <input type="submit" value="Create this coffee" class="btn primary"> or 
-            <a href="@routes.CoffeesController.list()" class="btn">Cancel</a> 
+            <input type="submit" value="Create this user" class="btn primary"> or 
+            <a href="@routes.UsersController.list()" class="btn">Cancel</a> 
         </div>
         
     }
