@@ -11,9 +11,8 @@ import play.api.Play.current
 case class Company(
   compId: Option[Long],
   name: String,
-  street: String,
   city: String,
-  zipCode: String)
+  orders: Int)
 
 case class User(
   //id: Option[Long],
@@ -39,12 +38,11 @@ object Companies extends Table[Company]("COMPANIES") {
 
   def compId = column[Long]("COMP_ID", O.PrimaryKey, O.AutoInc) // This is the primary key column
   def name = column[String]("COMP_NAME")
-  def street = column[String]("STREET")
   def city = column[String]("CITY")
-  def zipCode = column[String]("ZIP")
+  def orders = column[Int]("ORDERS")
   // Every table needs a * projection with the same type as the table's type parameter
-  def * = compId.? ~ name ~ street ~ city ~ zipCode <> (Company.apply _, Company.unapply _)
-  def autoInc = compId.? ~ name ~ street ~ city ~ zipCode <> (Company, Company.unapply _) returning compId
+  def * = compId.? ~ name ~ city ~ orders <> (Company.apply _, Company.unapply _)
+  def autoInc = compId.? ~ name ~ city ~ orders <> (Company, Company.unapply _) returning compId
 
   def findAll() = for (s <- Companies) yield s
 

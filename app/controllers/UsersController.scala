@@ -48,24 +48,34 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
     )(User.apply)(User.unapply)
       )
 
+  val acForm = Form[Account](
+    mapping(
+      "accId" -> optional(longNumber),
+      "email" -> text,
+      "password" -> text,
+      "permission" -> text
+      )((accId, email, password, _) => new Account(accId, email, password, NormalUser))
+       ((a: Account) => Some((a.accId, a.email, a.password, a.permission.toString)))
+        )
+
 /*  val accForm = Form(
     mapping(
-      "accId" -> optional(number),
+      "accId" -> optional(of[Long]),
       "email" -> text,
       "password" -> text,
         "user" -> mapping(
           "name" -> optional(nonEmptyText),
-          "accID" -> number,
-          "compID" -> number,
+          "accID" -> optional(of[Long]),
+          "compID" -> optional(of[Long]),
           "position" -> text,
           "doneParts" -> number,
           "setup" -> number
     )(User.apply)(User.unapply)
-    )((accId, email, password, user) => Account(accId, email, password, NormalUser, user))
-      )
-    ((account: Account) => Some(account.accId, account.email, account.password, account.user))*/
+    )((accId, email, password, user) => Account(accId, email, password, NormalUser))
+    ((account: Account) => Some(account.accId, account.email, account.password, account.NormalUser))
+    )*/
   // -- Users
-
+/*
   val addUserForm = Form(
     tuple(
       "name" -> optional(nonEmptyText),
@@ -74,7 +84,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
       "position" -> text,
       "division" -> text
       )
-    )
+    )*/
 
   /**
    * Handle default path requests, redirect to entities list
