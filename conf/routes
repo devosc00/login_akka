@@ -14,14 +14,14 @@ GET     /logout                             controllers.Application.logout
 GET      /users                    controllers.UsersController.list(p:Int ?= 0, s:Int ?= 2, f ?= "%")
 
 # Add coffee
-GET      /users/new                controllers.UsersController.create
-POST     /users                    controllers.UsersController.save
+GET      /users/new              controllers.UsersController.create
+POST     /users/new/:id                    controllers.UsersController.save(id:Long)
 
 # Edit existing coffee
-GET     /users/:id                controllers.UsersController.edit(id:String)
-POST    /users/:id                controllers.UsersController.update(id:String)
+GET     /users/:id                controllers.UsersController.edit(id:Long)
+POST    /users/:id                controllers.UsersController.update(id:Long)
 
 # Delete a computer
-POST    /users/:id/delete         controllers.UsersController.delete(id:String)
+POST    /users/:id/delete         controllers.UsersController.delete(id:Long)
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

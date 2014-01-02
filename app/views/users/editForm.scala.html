@@ -1,4 +1,4 @@
-@(pk: String, userForm: Form[User])
+@(pk: Long, userForm: Form[Account])
 
 @import helper._
 
@@ -13,9 +13,9 @@
         <fieldset>
         
             @inputText(userForm("name"),  '_label -> "User name")
-            @inputText(userForm("price"), '_label -> "Price")
-            @inputText(userForm("sales"), '_label -> "Sales")
-            @inputText(userForm("total"), '_label -> "Total")
+            @inputText(userForm("email"), '_label -> "Email")
+            @inputPassword(userForm("password"), '_label -> "Password")
+     
 
           
             

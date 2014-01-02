@@ -14,16 +14,6 @@ case class Company(
   city: String,
   orders: Int)
 
-case class User(
-  //id: Option[Long],
-  //name: String,
-  name: Option[String],
-  accID: Option[Long],
-  compID: Option[Long],
-  position: String,
-  doneParts: Int,
-  setup: Int)
-
 /**
  * Helper for pagination.
  */
@@ -54,10 +44,12 @@ object Companies extends Table[Company]("COMPANIES") {
    def create(company: Company)(implicit s: Session) = database withTransaction {
     Companies.autoInc.insert(company)
   } 
+
+   def findByPk(pk: Long) =
+    for (u <- Companies if u.compId === pk) yield u
 }
 
-// Definition of the COFFEES table
-object Users extends Table[User]("USERS") {
+/*object Users extends Table[User]("USERS") {
   lazy val database = Database.forDataSource(DB.getDataSource())
 
   //def id = column[Int]("USER_ID", O.PrimaryKey, O AutoInc) // This is the primary key column
@@ -98,8 +90,7 @@ object Users extends Table[User]("USERS") {
   def create(user: User)(implicit s: Session) = database withTransaction {
     Users.insert(user)
   } 
-
+*/
  /* def findAccId(pk: String) = 
     val user = { user => findByPK(pk).get.accID }
     */
-}

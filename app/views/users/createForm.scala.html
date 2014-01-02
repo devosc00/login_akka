@@ -1,4 +1,4 @@
-@(userForm: Form[User])
+@( accForm: Form[Account], compId: Long)
 
 @import helper._
 
@@ -8,12 +8,14 @@
     
     <h1>Add a User</h1>
     
-    @helper.form(routes.UsersController.save()) {
+    @helper.form(routes.UsersController.save(compId)) {
         
         <fieldset>
         
-            @inputText(userForm("name"), '_label -> "Nazwa użytkownika")
-            @inputText(userForm("position"), '_label -> "Stanowisko")
+            @inputText(accForm("name"), '_label -> "Nazwa użytkownika")
+            @inputText(accForm("email"), '_label -> "Email")
+            @inputPassword(accForm("password"), '_label -> "Hasło")
+            @inputText(accForm("position"), '_label -> "Stanowisko")
 
             
 

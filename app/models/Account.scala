@@ -3,8 +3,10 @@ package models
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.DB
 import play.api.Play.current
+import scala.reflect.runtime.universe._
 
-case class Account(accId: Option[Long], email: String, password: String, permission: Permission)
+case class Account(accId: Option[Long], email: String, password: String, name: String,
+compID: Long, position: String, permission: Permission)
 
 object Accounts extends Table[Account]("ACCOUNT") {
   lazy val database = Database.forDataSource(DB.getDataSource())
@@ -12,20 +14,40 @@ object Accounts extends Table[Account]("ACCOUNT") {
   def accId = column[Long]("ACC_ID", O.PrimaryKey, O.AutoInc)
   def email = column[String]("EMAIL")
   def password = column[String]("PASSWORD")
+  def name = column[String]("NAME")
+  def compID = column[Long]("COMP_ID")
+  def position = column[String]("POSITION") 
   def permission = column[Permission]("PERMISSION")
 
+  def company = foreignKey("COMP_FK", compID, Companies)(_.compId)
   // Every table needs a * projection with the same type as the table's type parameter
-  def * = accId.? ~ email ~ password ~ permission <> (Account.apply _, Account.unapply _)
-  def autoInc = email ~ password ~ permission returning accId
+  def * = accId.? ~ email ~ password ~ name ~ compID ~ position ~ permission <> (Account.apply _, Account.unapply _)
+  def autoInc = email ~ password ~ name ~ compID ~ position ~ permission returning accId
 
 
   def authenticate(email: String, password: String): Option[Account] = {
     findByEmail(email).filter { account => password.equals(account.password) }
   }
 
-  def create(account: Account)(implicit s: Session) = database withTransaction {
-    Accounts.autoInc.insert(account.email, account.password, account.permission)
+
+def findAll(filter: String ="%") = {
+    for {
+      s <- Accounts
+      c <- s.company
+      if (s.name like ("%" + filter))
+    } yield (s, c)
   }
+
+  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%") = {
+    val members = typeOf[Account].members.filter(m => m.isTerm && !m.isMethod).toList
+    val fields = members.map(_.name).reverse.zipWithIndex
+    println("Fields of Accounts: " + fields) // List((id ,0), (name ,1), (supID ,2), (price ,3), (sales ,4), (total ,5))
+    findAll(filter).sortBy(_._1.name).drop(page * pageSize).take(pageSize)
+  }
+
+/*  def create(a: Account)(implicit s: Session) = database withTransaction {
+    Accounts.autoInc.insert(a)
+  }*/
 
   def findByEmail(email: String): Option[Account] = {
     database withSession { implicit session =>
@@ -41,7 +63,7 @@ object Accounts extends Table[Account]("ACCOUNT") {
     }
   }
 
-  def findAccById(id: Long) = {
+  def findByPk(id: Long) = {
     for (n <- Accounts if n.accId === id) yield n
   }
 

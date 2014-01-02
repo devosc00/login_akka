@@ -1,4 +1,4 @@
-@(currentPage: Page[(User,Company)], currentOrderBy: Int, currentFilter: String)(implicit flash: play.api.mvc.Flash)
+@(currentPage: Page[(Account ,Company)], currentOrderBy: Int, currentFilter: String)(implicit flash: play.api.mvc.Flash)
 
 @****************************************
 * Helper generating navigation links    *
@@ -50,23 +50,23 @@
                 <tr>
                     @header(2, "Imię i nazwisko")
                     @header(3, "Stanowisko")
-                    @header(4, "Liczba sztuk")
-                    @header(5, "Sztuki na ustawienie")
+                    @header(4, "Email")
+                    @header(5, "Rola")
                 </tr>
             </thead>
             <tbody>
                 @entities.map { 
                  case (entity,company) => {
                         <tr>
-                            <td><a href="@routes.UsersController.edit(entity.name.get)">@entity.name</a></td>
+                            <td><a href="@routes.UsersController.edit(entity.accId.get)">@entity.name</a></td>
                             <td>
                                 @entity.position
                             </td>
                             <td>
-                                @entity.doneParts
+                                @entity.email
                             </td>
                             <td>
-                                @entity.setup
+                                @entity.permission
                             </td>          
                         </tr>
                      }

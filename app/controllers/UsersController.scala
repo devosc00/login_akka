@@ -22,7 +22,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
 
   lazy val database = Database.forDataSource(DB.getDataSource())
 
-  val pageSize = 3
+  val pageSize = 5
 
   /**
    * This result directly redirect to the application home.
@@ -36,7 +36,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
   /**
    * Describe the Userused in both edit and create screens).
    */
-  val userForm = Form(
+/*  val userForm = Form(
     mapping(
       //"id" -> optional(number),
       "name" -> optional(nonEmptyText),
@@ -47,48 +47,22 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
       "setup" -> number
     )(User.apply)(User.unapply)
       )
-
-  val acForm = Form[Account](
+*/
+  val accForm = Form[Account](
     mapping(
       "accId" -> optional(longNumber),
       "email" -> text,
       "password" -> text,
+      "name" -> text,
+      "compID" -> longNumber,
+      "position" -> text,
       "permission" -> text
-      )((accId, email, password, _) => new Account(accId, email, password, NormalUser))
-       ((a: Account) => Some((a.accId, a.email, a.password, a.permission.toString)))
+      )((accId, email, password, name, compID, position, _) => 
+      new Account(accId, email, password, name, compID, position, NormalUser))
+       ((a: Account) => Some((a.accId, a.email, a.password, a.name, a.compID, a.position, a.permission.toString)))
         )
 
-/*  val accForm = Form(
-    mapping(
-      "accId" -> optional(of[Long]),
-      "email" -> text,
-      "password" -> text,
-        "user" -> mapping(
-          "name" -> optional(nonEmptyText),
-          "accID" -> optional(of[Long]),
-          "compID" -> optional(of[Long]),
-          "position" -> text,
-          "doneParts" -> number,
-          "setup" -> number
-    )(User.apply)(User.unapply)
-    )((accId, email, password, user) => Account(accId, email, password, NormalUser))
-    ((account: Account) => Some(account.accId, account.email, account.password, account.NormalUser))
-    )*/
-  // -- Users
-/*
-  val addUserForm = Form(
-    tuple(
-      "name" -> optional(nonEmptyText),
-      "email" -> text,
-      "password" -> text,
-      "position" -> text,
-      "division" -> text
-      )
-    )*/
 
-  /**
-   * Handle default path requests, redirect to entities list
-   */
   def index = Action { Home }
 
   /**
@@ -98,13 +72,13 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
    * @param orderBy Column to be sorted
    * @param filter Filter applied on entity names
    */
-  def list(page: Int, orderBy: Int, filter: String = "%") = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  def list(page: Int, orderBy: Int, filter: String) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     database withSession {
       Ok(html.users.list(
-        Page(Users.list(page, pageSize, orderBy, filter).list,
+        Page(Accounts.list(page, pageSize, orderBy, filter = ("%" + filter + "%")).list,
           page,
           offset = pageSize * page,
-          Users.findAll(filter).list.size),
+          Accounts.findAll(filter).list.size),
         orderBy,
         filter))
     }
@@ -113,37 +87,22 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
    * Display the 'new userForm'.
    */
   def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
-    database withSession {
-      Ok(html.users.createForm(userForm))
-    }
+    Form("compID" -> longNumber).bindFromRequest.fold(
+      errors => BadRequest,
+      id => {
+        database withSession { 
+          Ok(html.users.createForm( accForm, id))
+        }
+      })
   }
 
-  /**
-   * Handle the 'new userForm' submission.
-   */
 
-
-/*  def saveNewOne = StackAction(AuthorityKey -> Administrator) { implicit request =>
-    addUserForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.users.createForm(addUserForm)),
-      {
-        case ( name, email, password, position, division) => {
-          val account = Account.create(Account(Some, email, password, division match {
-            case "Administrator" => Administartor
-            case "NormalUser" => NormalUser
-            } )),
-          val user = User.create(
-            User(name, ))
-        }
-      }
-      )*/
-
-  def save = StackAction(AuthorityKey -> Administrator) { implicit request =>
-    userForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.users.createForm(formWithErrors)),
+  def save(id: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+      accForm.bindFromRequest.fold(
+      formWithErrors => BadRequest,
       entity => {
         database withTransaction {
-          Users.insert(entity)
+          Accounts.insert(entity)
           Home.flashing("success" -> s"Entity ${entity.name} has been created")
         }
       })
@@ -154,10 +113,10 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
    *
    * @param id Id of the entity to edit
    */
-  def edit(pk: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def edit(pk: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      Users.findByPK(pk).list.headOption match {
-        case Some(e) => Ok(html.users.editForm(pk, userForm.fill(e)))
+ Accounts.findByPk(pk).list.headOption match {
+        case Some(e) => Ok(html.users.editForm(pk, accForm.fill(e)))
         case None => NotFound
       }
     }
@@ -168,12 +127,12 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
    *
    * @param id Id of the entity to edit
    */
-  def update(pk: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def update(pk: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      userForm.bindFromRequest.fold(
+      accForm.bindFromRequest.fold(
         formWithErrors => BadRequest(html.users.editForm(pk, formWithErrors)),
         entity => {
-          Home.flashing((Users.findByPK(pk).update(entity)) match {
+          Home.flashing((Accounts.findByPk(pk).update(entity)) match {
             case 0 => "failure" -> s"Could not update entity ${entity.name}"
             case _ => "success" -> s"Entity ${entity.name} has been updated"
           })
@@ -184,9 +143,9 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
   /**
    * Handle entity deletion.
    */
-  def delete(pk: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def delete(pk: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      Home.flashing(Users.findByPK(pk).delete match {
+      Home.flashing(Accounts.findByPk(pk).delete match {
         case 0 => "failure" -> "Entity has Not been deleted"
         case x => "success" -> s"Entity has been deleted (deleted $x row(s))"
       })
