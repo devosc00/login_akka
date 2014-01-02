@@ -16,7 +16,7 @@ import jp.t2v.lab.play2.stackc.{ RequestWithAttributes, RequestAttributeKey, Sta
 object Application extends Controller with LoginLogout with AuthConfigImpl {
 
   val loginForm = Form {
-    mapping("email" -> email, "password" -> text)(Account.authenticate)(_.map(u => (u.email, "")))
+    mapping("email" -> email, "password" -> text)(Accounts.authenticate)(_.map(u => (u.email, "")))
       .verifying("Invalid email or password", result => result.isDefined)
   }
 
@@ -34,13 +34,13 @@ object Application extends Controller with LoginLogout with AuthConfigImpl {
     println("start act")
     loginForm.bindFromRequest.fold(
       formWithErrors => { println("form eror"); BadRequest(html.login(formWithErrors)) },
-      user => gotoLoginSucceeded(user.get.accId.getOrElse(0)))
+      user => gotoLoginSucceeded(user.get.accId.getOrElse(0.asInstanceOf[Long])))
   }
 }
 
 trait AuthConfigImpl extends AuthConfig {
 
-  type Id = Int
+  type Id = Long
 
   type User = Account
 
@@ -50,7 +50,7 @@ trait AuthConfigImpl extends AuthConfig {
 
   val sessionTimeoutInSeconds = 3600
 
-  def resolveUser(id: Id) = Account.findById(id)
+  def resolveUser(id: Id) = Accounts.findById(id)
 
   def loginSucceeded(request: RequestHeader) = Redirect(routes.UsersController.index)
 

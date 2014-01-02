@@ -10,15 +10,12 @@ object ApplicationBuild extends Build {
   val appDependencies = Seq(
     // Add your project dependencies here,
     jdbc,
-    //"postgresql" % "postgresql" % "9.1-901-1.jdbc4",
-   // "com.typesafe.play" %% "play-slick" % "0.4.0" ,
-    "jp.t2v" %% "play2.auth"      % "0.10.1",
-    "jp.t2v" %% "play2.auth.test" % "0.10.1" % "test",
-    "org.scalamock" %% "scalamock-scalatest-support" % "3.0" % "test",
+    "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
     "com.typesafe.play" %% "play-slick" % "0.4.0" ,
-    "org.slf4j" % "slf4j-nop" % "1.6.4",
-    "com.h2database" % "h2" % "1.3.166",
-    "org.xerial" % "sqlite-jdbc" % "3.6.20"
+    "jp.t2v" %% "play2.auth" % "0.10.1",
+    "jp.t2v" %% "play2.auth.test" % "0.10.1" % "test",
+    "org.scalamock" %% "scalamock-scalatest-support" % "3.0" % "test"
+
   )
 
 

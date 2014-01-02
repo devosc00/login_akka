@@ -7,7 +7,7 @@ case object Administrator extends Permission
 case object NormalUser extends Permission
 
 object Permission {
-  implicit val PermissionTimeMapper = MappedTypeMapper.base[Permission, String](
+ implicit val PermissionTimeMapper = MappedTypeMapper.base[Permission, String](
     d => Permission.stringValueOf(d),
     t => Permission.valueOf(t))
 

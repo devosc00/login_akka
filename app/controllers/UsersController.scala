@@ -6,14 +6,14 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.db.DB
 import play.api.Play.current
+import play.api.data.format.Formats._ 
 
 import jp.t2v.lab.play2.auth._
 
 import views._
 import models._
 
-// Use H2Driver to connect to an H2 database
-import scala.slick.driver.H2Driver.simple._
+import play.api.db.slick.Config.driver.simple._
 
 // Use the implicit threadLocalSession
 import Database.threadLocalSession
@@ -40,22 +40,30 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
     mapping(
       //"id" -> optional(number),
       "name" -> optional(nonEmptyText),
-      "accID" -> number,
-      "compID" -> number,
+      "accID" -> optional(of[Long]),
+      "compID" -> optional(of[Long]),
       "position" -> text,
       "doneParts" -> number,
       "setup" -> number
     )(User.apply)(User.unapply)
       )
 
-  val accForm = Form(
+/*  val accForm = Form(
     mapping(
       "accId" -> optional(number),
       "email" -> text,
-      "password" -> text
-    )((accId, email, password) => Account(accId, email, password, NormalUser))
-    ((account: Account) => Some(account.accId, account.email, account.password))
+      "password" -> text,
+        "user" -> mapping(
+          "name" -> optional(nonEmptyText),
+          "accID" -> number,
+          "compID" -> number,
+          "position" -> text,
+          "doneParts" -> number,
+          "setup" -> number
+    )(User.apply)(User.unapply)
+    )((accId, email, password, user) => Account(accId, email, password, NormalUser, user))
       )
+    ((account: Account) => Some(account.accId, account.email, account.password, account.user))*/
   // -- Users
 
   val addUserForm = Form(
@@ -96,7 +104,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
    */
   def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      Ok(html.users.createForm(userForm, accForm))
+      Ok(html.users.createForm(userForm))
     }
   }
 
@@ -105,7 +113,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
    */
 
 
-  def saveNewOne = StackAction(AuthorityKey -> Administrator) { implicit request =>
+/*  def saveNewOne = StackAction(AuthorityKey -> Administrator) { implicit request =>
     addUserForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.users.createForm(addUserForm)),
       {
@@ -118,11 +126,11 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
             User(name, ))
         }
       }
-      )
+      )*/
 
   def save = StackAction(AuthorityKey -> Administrator) { implicit request =>
     userForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.users.createForm(formWithErrors, accForm)),
+      formWithErrors => BadRequest(html.users.createForm(formWithErrors)),
       entity => {
         database withTransaction {
           Users.insert(entity)
