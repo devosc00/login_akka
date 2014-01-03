@@ -128,13 +128,12 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
       accForm.bindFromRequest.fold(
         formWithErrors => BadRequest(html.users.editForm(pk, formWithErrors)),
         entity => {
-          Home.flashing((Accounts.findByPk(pk).update(entity)) match {
-            case 0 => "failure" -> s"Nie można zaaktualizować ${entity.name}"
-            case _ => "success" -> s"${entity.name} został zaaktualizowany"
-          })
+          Accounts.update(pk, entity)
+          Home.flashing("success" -> s"Użytkownik ${entity.name} został uaktualniony")
         })
     }
   }
+
 
   /**
    * Handle entity deletion.
@@ -143,7 +142,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
     database withSession {
       Home.flashing(Accounts.findByPk(pk).delete match {  
         case 0 => "failure" -> "Nie został usunięty"
-        case x => "success" -> s"Zostało usunięte (deleted $x row(s))"
+        case x => "success" -> s"Został usunięty (deleted $x row(s))"
       })
     }
   }

@@ -5,6 +5,7 @@ import play.api.db.DB
 import play.api.Play.current
 import scala.reflect.runtime.universe._
 
+
 case class Account(accId: Option[Long], email: String, password: String, name: String,
 compID: Long, position: String, permission: Permission)
 
@@ -48,6 +49,13 @@ def findAll(filter: String ="%") = {
   def create(a: Account)(implicit s: Session) = database withTransaction {
     Accounts.autoInc.insert(a.email, a.password, a.name, a.compID, a.position, a.permission)
   }
+
+  def update(id: Long, a: Account)(implicit s: Session) = {
+          Accounts.where(_.accId === id).map { 
+            q => q.email ~ q.name ~ q.password ~ q.position ~ q.permission }
+            .update((a.email, a.name, a.password, a.position, a.permission))
+        }
+  
 
   def findByEmail(email: String): Option[Account] = {
     database withSession { implicit session =>

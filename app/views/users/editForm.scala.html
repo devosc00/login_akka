@@ -12,10 +12,15 @@
     
         <fieldset>
         
-            @inputText(userForm("name"),  '_label -> "User name")
+            @inputText(userForm("name"),  '_label -> "Nazwa użytkownika")
             @inputText(userForm("email"), '_label -> "Email")
-            @inputPassword(userForm("password"), '_label -> "Password")
-     
+            @inputPassword(userForm("password"), '_label -> "Hasło")
+            @inputText(userForm("position"), '_label -> "Stanowisko")
+            @select(
+                userForm("permission"), options("NormalUser" -> "Użytkownik", "Administrator" -> "Admin"),
+                 
+                '_label -> "", '_default -> "-- Ustaw prawa --"    
+            )
 
           
             
