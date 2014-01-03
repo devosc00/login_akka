@@ -24,30 +24,10 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
 
   val pageSize = 5
 
-  /**
-   * This result directly redirect to the application home.
-   */
+
   val Home = Redirect(routes.UsersController.list(0, 2, ""))
 
-/*  val supplierSelect = database withSession {
-    Companies.options.list.map(item => (item._1.toString, item._2))
-  }*/
 
-  /**
-   * Describe the Userused in both edit and create screens).
-   */
-/*  val userForm = Form(
-    mapping(
-      //"id" -> optional(number),
-      "name" -> optional(nonEmptyText),
-      "accID" -> optional(of[Long]),
-      "compID" -> optional(of[Long]),
-      "position" -> text,
-      "doneParts" -> number,
-      "setup" -> number
-    )(User.apply)(User.unapply)
-      )
-*/
   val accForm = Form[Account](
     mapping(
       "accId" -> optional(longNumber),
@@ -65,13 +45,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
 
   def index = Action { Home }
 
-  /**
-   * Display the paginated list.
-   *
-   * @param page Current page number (starts from 0)
-   * @param orderBy Column to be sorted
-   * @param filter Filter applied on entity names
-   */
+
   def list(page: Int, orderBy: Int, filter: String) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     database withSession {
       Ok(html.users.list(
@@ -83,9 +57,8 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
         filter))
     }
   }
-  /**
-   * Display the 'new userForm'.
-   */
+ 
+
   def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
         database withSession { 
           Ok(html.users.createForm(accForm))
@@ -104,11 +77,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
       })
   }
 
-  /**
-   * Display the 'edit userForm' of an existing entity.
-   *
-   * @param id Id of the entity to edit
-   */
+ 
   def edit(pk: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
  Accounts.findByPk(pk).list.headOption match {
@@ -118,11 +87,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
     }
   }
 
-  /**
-   * Handle the 'edit userForm' submission
-   *
-   * @param id Id of the entity to edit
-   */
+
   def update(pk: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
       accForm.bindFromRequest.fold(
@@ -135,9 +100,6 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
   }
 
 
-  /**
-   * Handle entity deletion.
-   */
   def delete(pk: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
       Home.flashing(Accounts.findByPk(pk).delete match {  
