@@ -54,7 +54,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
       "email" -> text,
       "password" -> text,
       "name" -> text,
-      "compID" -> longNumber,
+      "compID" -> ignored(49L),
       "position" -> text,
       "permission" -> text
       )((accId, email, password, name, compID, position, _) => 
@@ -87,23 +87,19 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
    * Display the 'new userForm'.
    */
   def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
-    Form("compID" -> longNumber).bindFromRequest.fold(
-      errors => BadRequest,
-      id => {
         database withSession { 
-          Ok(html.users.createForm( accForm, id))
+          Ok(html.users.createForm(accForm))
         }
-      })
   }
 
 
-  def save(id: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def save = StackAction(AuthorityKey -> Administrator) { implicit request =>
       accForm.bindFromRequest.fold(
-      formWithErrors => BadRequest,
+      formWithErrors => BadRequest(html.users.createForm(formWithErrors)),
       entity => {
         database withTransaction {
-          Accounts.insert(entity)
-          Home.flashing("success" -> s"Entity ${entity.name} has been created")
+          Accounts.create(entity)
+          Home.flashing("success" -> s"User ${entity.name} został dodany")
         }
       })
   }
@@ -133,8 +129,8 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
         formWithErrors => BadRequest(html.users.editForm(pk, formWithErrors)),
         entity => {
           Home.flashing((Accounts.findByPk(pk).update(entity)) match {
-            case 0 => "failure" -> s"Could not update entity ${entity.name}"
-            case _ => "success" -> s"Entity ${entity.name} has been updated"
+            case 0 => "failure" -> s"Nie można zaaktualizować ${entity.name}"
+            case _ => "success" -> s"${entity.name} został zaaktualizowany"
           })
         })
     }
@@ -145,9 +141,9 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
    */
   def delete(pk: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      Home.flashing(Accounts.findByPk(pk).delete match {
-        case 0 => "failure" -> "Entity has Not been deleted"
-        case x => "success" -> s"Entity has been deleted (deleted $x row(s))"
+      Home.flashing(Accounts.findByPk(pk).delete match {  
+        case 0 => "failure" -> "Nie został usunięty"
+        case x => "success" -> s"Zostało usunięte (deleted $x row(s))"
       })
     }
   }

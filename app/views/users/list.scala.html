@@ -35,7 +35,7 @@
     <div id="actions">
         
         @helper.form(action=routes.UsersController.list()) {
-            <input type="search" id="searchbox" name="f" value="@currentFilter" placeholder="Filter by name...">
+            <input type="search" id="searchbox" name="f" value="@currentFilter" placeholder="Szukaj po nazwie...">
             <input type="submit" id="searchsubmit" value="Filtruj" class="btn primary">
         }
         
@@ -79,23 +79,23 @@
             <ul>
                 @currentPage.prev.map { page =>
                     <li class="prev">
-                        <a href="@link(page)">&larr; Previous</a>
+                        <a href="@link(page)">&larr; Poprzednia</a>
                     </li> 
                 }.getOrElse {
                     <li class="prev disabled">
-                        <a>&larr; Previous</a>
+                        <a>&larr; Poprzednia</a>
                     </li>
                 }
                 <li class="current">
-                    <a>Displaying @(currentPage.offset + 1) to @(currentPage.offset + entities.size) of @currentPage.total</a>
+                    <a>Pokazane @(currentPage.offset + 1) do @(currentPage.offset + entities.size) z @currentPage.total</a>
                 </li>
                 @currentPage.next.map { page =>
                     <li class="next">
-                        <a href="@link(page)">Next &rarr;</a>
+                        <a href="@link(page)">Następna &rarr;</a>
                     </li> 
                 }.getOrElse {
                     <li class="next disabled">
-                        <a>Next &rarr;</a>
+                        <a>Następna &rarr;</a>
                     </li>
                 }
             </ul>
@@ -104,7 +104,7 @@
     }.getOrElse {
         
         <div class="well">
-            <em>Nothing to display</em>
+            <em>Nic do wyświetlenia</em>
         </div>
         
     }   

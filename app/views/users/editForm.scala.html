@@ -22,14 +22,14 @@
         </fieldset>
         
         <div class="actions">
-            <input type="submit" value="Save this user" class="btn primary"> or 
-            <a href="@routes.UsersController.list()" class="btn">Cancel</a> 
+            <input type="submit" value="Zapisz" class="btn primary"> albo
+            <a href="@routes.UsersController.list()" class="btn">Anuluj</a> 
         </div>
         
     }
     
     @form(routes.UsersController.delete(pk), 'class -> "topRight") {
-        <input type="submit" value="Delete this user" class="btn danger">
+        <input type="submit" value="Usuń" class="btn danger">
     }
     
 }

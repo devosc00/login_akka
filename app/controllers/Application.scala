@@ -17,7 +17,7 @@ object Application extends Controller with LoginLogout with AuthConfigImpl {
 
   val loginForm = Form {
     mapping("email" -> email, "password" -> text)(Accounts.authenticate)(_.map(u => (u.email, "")))
-      .verifying("Invalid email or password", result => result.isDefined)
+      .verifying("Błędny adres email lub hasło", result => result.isDefined)
   }
 
   def login = Action { implicit request =>
@@ -27,7 +27,7 @@ object Application extends Controller with LoginLogout with AuthConfigImpl {
 
   def logout = Action { implicit request =>
     gotoLogoutSucceeded.flashing(
-      "success" -> "You've been logged out")
+      "success" -> "Zostałeś wylogowany")
   }
 
   def authenticate = Action { implicit request =>
@@ -58,7 +58,7 @@ trait AuthConfigImpl extends AuthConfig {
 
   def authenticationFailed(request: RequestHeader) = Redirect(routes.Application.login)
 
-  def authorizationFailed(request: RequestHeader) = Forbidden("no permission")
+  def authorizationFailed(request: RequestHeader) = Forbidden("brak dostępu")
 
   def authorize(user: User, authority: Authority) = (user.permission, authority) match {
     case (Administrator, _) => true

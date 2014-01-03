@@ -1,4 +1,4 @@
-@( accForm: Form[Account], compId: Long)
+@( accForm: Form[Account])
 
 @import helper._
 
@@ -6,9 +6,9 @@
 
 @main {
     
-    <h1>Add a User</h1>
+    <h1>Dodaj użytkownika</h1>
     
-    @helper.form(routes.UsersController.save(compId)) {
+    @helper.form(routes.UsersController.save()) {
         
         <fieldset>
         
@@ -17,13 +17,17 @@
             @inputPassword(accForm("password"), '_label -> "Hasło")
             @inputText(accForm("position"), '_label -> "Stanowisko")
 
-            
+            @select(
+                accForm("permission"), options("NormalUser" -> "Użytkownik", "Administrator" -> "Admin"),
+                 
+                '_label -> "", '_default -> "-- Ustaw prawa --"    
+            )
 
         </fieldset>
         
         <div class="actions">
-            <input type="submit" value="Create this user" class="btn primary"> or 
-            <a href="@routes.UsersController.list()" class="btn">Cancel</a> 
+            <input type="submit" value="Dodaj" class="btn primary"> albo 
+            <a href="@routes.UsersController.list()" class="btn">Anuluj</a> 
         </div>
         
     }

@@ -45,9 +45,9 @@ def findAll(filter: String ="%") = {
     findAll(filter).sortBy(_._1.name).drop(page * pageSize).take(pageSize)
   }
 
-/*  def create(a: Account)(implicit s: Session) = database withTransaction {
-    Accounts.autoInc.insert(a)
-  }*/
+  def create(a: Account)(implicit s: Session) = database withTransaction {
+    Accounts.autoInc.insert(a.email, a.password, a.name, a.compID, a.position, a.permission)
+  }
 
   def findByEmail(email: String): Option[Account] = {
     database withSession { implicit session =>

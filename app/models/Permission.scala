@@ -26,4 +26,5 @@ object Permission {
     case _ => throw new IllegalArgumentException()
   }
 
+  def option: Seq[String] = Seq(Administrator.toString, NormalUser.toString)
 }

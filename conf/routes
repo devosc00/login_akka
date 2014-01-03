@@ -15,7 +15,7 @@ GET      /users                    controllers.UsersController.list(p:Int ?= 0, 
 
 # Add coffee
 GET      /users/new              controllers.UsersController.create
-POST     /users/new/:id                    controllers.UsersController.save(id:Long)
+POST     /users/new               controllers.UsersController.save
 
 # Edit existing coffee
 GET     /users/:id                controllers.UsersController.edit(id:Long)
