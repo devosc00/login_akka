@@ -57,8 +57,8 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
       "compID" -> ignored(49L),
       "position" -> text,
       "permission" -> text
-      )((accId, email, password, name, compID, position, _) => 
-      new Account(accId, email, password, name, compID, position, NormalUser))
+      )((accId, email, password, name, compID, position, permission) => 
+      new Account(accId, email, password, name, compID, position, Permission.valueOf(permission)))
        ((a: Account) => Some((a.accId, a.email, a.password, a.name, a.compID, a.position, a.permission.toString)))
         )
 
