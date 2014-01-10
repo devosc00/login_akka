@@ -31,17 +31,34 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
   val accForm = Form[Account](
     mapping(
       "accId" -> optional(longNumber),
+      "email" -> nonEmptyText,
+      "password" -> tuple(
+          "main" -> text(minLength = 6),
+          "confirm" -> text
+      ).verifying(
+        "Hasła są różne", passwords => passwords._1 == passwords._2 ),
+      "name" -> nonEmptyText,
+      "compID" -> ignored(49L),
+      "position" -> nonEmptyText,
+      "permission" -> text
+      )((accId, email, password, name, compID, position, permission) => 
+         Account(accId, email, password._1, name, compID, position, Permission.valueOf(permission)))
+       ((a: Account) => Some((a.accId, a.email, (a.password,""), a.name, a.compID, a.position, a.permission.toString)))
+        )
+
+  val upForm = Form[Account](
+    mapping(
+      "accId" -> optional(longNumber),
       "email" -> text,
-      "password" -> text,
+      "password" -> ignored("": String),
       "name" -> text,
       "compID" -> ignored(49L),
       "position" -> text,
       "permission" -> text
       )((accId, email, password, name, compID, position, permission) => 
-      new Account(accId, email, password, name, compID, position, Permission.valueOf(permission)))
+         Account(accId, email, password, name, compID, position, Permission.valueOf(permission)))
        ((a: Account) => Some((a.accId, a.email, a.password, a.name, a.compID, a.position, a.permission.toString)))
         )
-
 
   def index = Action { Home }
 
@@ -81,7 +98,7 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
   def edit(pk: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
  Accounts.findByPk(pk).list.headOption match {
-        case Some(e) => Ok(html.users.editForm(pk, accForm.fill(e)))
+        case Some(e) => Ok(html.users.editForm(pk, upForm.fill(e)))
         case None => NotFound
       }
     }
@@ -90,7 +107,8 @@ object UsersController extends Controller with AuthElement with AuthConfigImpl {
 
   def update(pk: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     database withSession {
-      accForm.bindFromRequest.fold(
+      println("update form filled")
+      upForm.bindFromRequest.fold(
         formWithErrors => BadRequest(html.users.editForm(pk, formWithErrors)),
         entity => {
           Accounts.update(pk, entity)

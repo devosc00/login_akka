@@ -6,7 +6,7 @@
 
 @main {
     
-    <h1>Edit User</h1>
+    <h1>Edycja</h1>
     
     @form(routes.UsersController.update(pk)) {
     
@@ -14,7 +14,6 @@
         
             @inputText(userForm("name"),  '_label -> "Nazwa użytkownika")
             @inputText(userForm("email"), '_label -> "Email")
-            @inputPassword(userForm("password"), '_label -> "Hasło")
             @inputText(userForm("position"), '_label -> "Stanowisko")
             @select(
                 userForm("permission"), options("NormalUser" -> "Użytkownik", "Administrator" -> "Admin"),

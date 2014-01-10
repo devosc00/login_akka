@@ -14,7 +14,18 @@
         
             @inputText(accForm("name"), '_label -> "Nazwa użytkownika")
             @inputText(accForm("email"), '_label -> "Email")
-            @inputPassword(accForm("password"), '_label -> "Hasło")
+            @inputPassword(
+                accForm("password.main"), 
+                '_label -> "Hasło",
+                '_help -> "Hasło musi mieć conajmniej 6 liter. "
+            )
+            
+            @inputPassword(
+                accForm("password.confirm"), 
+                '_label -> "Powtórz Hasło",
+                '_help -> "Powtórz hasło raz jeszcze. ",
+                '_error -> accForm.error("password")
+            )
             @inputText(accForm("position"), '_label -> "Stanowisko")
 
             @select(

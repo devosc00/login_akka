@@ -29,9 +29,14 @@ object Accounts extends Table[Account]("ACCOUNT") {
   def authenticate(email: String, password: String): Option[Account] = {
     findByEmail(email).filter { account => password.equals(account.password) }
   }
+  
 
+  def fillPass(id: Long) = { 
+    Accounts.filter(_.accId === id).map(p => p.password).toString
 
-def findAll(filter: String ="%") = {
+  }
+
+  def findAll(filter: String ="%") = {
     for {
       s <- Accounts
       c <- s.company
@@ -50,12 +55,12 @@ def findAll(filter: String ="%") = {
     Accounts.autoInc.insert(a.email, a.password, a.name, a.compID, a.position, a.permission)
   }
 
-  def update(id: Long, a: Account)(implicit s: Session) = {
-          Accounts.where(_.accId === id).map { 
-            q => q.email ~ q.name ~ q.password ~ q.position ~ q.permission }
-            .update((a.email, a.name, a.password, a.position, a.permission))
+  def update(id: Long, a: Account)(implicit s: Session) = database withTransaction {
+          val up = Accounts.filter(_.accId === id)
+            .map(q => q.name ~ q.email ~ q.position ~ q.permission)
+            up.update(( a.name, a.email, a.position, a.permission))
         }
-  
+
 
   def findByEmail(email: String): Option[Account] = {
     database withSession { implicit session =>
